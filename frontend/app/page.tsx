@@ -74,11 +74,10 @@ export default function Home() {
       let responseText = "";
       if (userMessage.attachments && userMessage.attachments.length > 0) {
         const fileNames = userMessage.attachments.map((f) => f.name).join(", ");
-        responseText = `I have received your document (${fileNames}). ${
-          trimmed
+        responseText = `I have received your document (${fileNames}). ${trimmed
             ? `Here is the analysis based on "${trimmed}":\n\nThe attached file has been processed successfully. What specific insights or summaries would you like me to extract?`
             : "I am ready to analyze this document. What questions do you have about it?"
-        }`;
+          }`;
       } else if (thinkActive) {
         responseText = `**Deep Thought Analysis:**\n1. Examining core query: "${trimmed}"\n2. Cross-referencing logic and concepts.\n3. Formulating response...\n\nHere is a detailed breakdown for **${trimmed}** with deep reasoning applied.`;
       } else {
