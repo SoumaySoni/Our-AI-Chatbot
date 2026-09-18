@@ -1,4 +1,3 @@
-import React from "react";
 import { Plus, Brain, Mic, ArrowUp, AudioLines } from "lucide-react";
 import { ChatInputConfig, CapsuleDisplayOptions } from "@/types/chat";
 
@@ -46,11 +45,10 @@ export function InputCapsuleBar({ inputConfig, displayOptions }: InputCapsuleBar
         <button
           type="button"
           onClick={toggles.think.toggle}
-          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer ${
-            toggles.think.active
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer ${toggles.think.active
               ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
               : "text-zinc-300 hover:text-white hover:bg-white/10"
-          }`}
+            }`}
         >
           <Brain className={`w-4.5 h-4.5 ${toggles.think.active ? "text-blue-400" : "text-zinc-300"}`} strokeWidth={1.8} />
           <span>Think</span>
@@ -59,11 +57,10 @@ export function InputCapsuleBar({ inputConfig, displayOptions }: InputCapsuleBar
         <button
           type="button"
           onClick={toggles.voice.toggle}
-          className={`p-1.5 rounded-full transition-colors cursor-pointer ${
-            toggles.voice.listening
+          className={`p-1.5 rounded-full transition-colors cursor-pointer ${toggles.voice.listening
               ? "text-red-400 bg-red-500/20"
               : "text-zinc-300 hover:text-white hover:bg-white/10"
-          }`}
+            }`}
           aria-label="Voice input"
         >
           <Mic className="w-4.75 h-4.75" strokeWidth={1.8} />
@@ -82,9 +79,8 @@ export function InputCapsuleBar({ inputConfig, displayOptions }: InputCapsuleBar
             type="button"
             onClick={query.onSend}
             disabled={!query.hasContent || isGenerating}
-            className={`w-8.5 h-8.5 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] flex items-center justify-center transition-all shadow-md ${
-              !query.hasContent || isGenerating ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
-            }`}
+            className={`w-8.5 h-8.5 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] flex items-center justify-center transition-all shadow-md ${!query.hasContent || isGenerating ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
+              }`}
             aria-label="Send message"
           >
             <ArrowUp className="w-4.5 h-4.5 text-white" strokeWidth={2.2} />

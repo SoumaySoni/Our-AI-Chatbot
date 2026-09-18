@@ -1,4 +1,3 @@
-import React from "react";
 import { ChatInputConfig } from "@/types/chat";
 import { FileChips } from "./FileChips";
 import { InputCapsuleBar } from "./InputCapsuleBar";

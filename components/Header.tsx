@@ -4,6 +4,13 @@ interface HeaderProps {
   onResetChat: () => void;
 }
 
+/**
+ * () => void;
+ * This defines the shape of the function.
+ * () means it takes zero arguments (no inputs).
+ * => void means it returns nothing (it just performs an action and finishes).
+ */
+
 export function Header({ onResetChat }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 h-16 px-6 flex items-center justify-between z-30 bg-black/50 backdrop-blur-md border-b border-white/4">

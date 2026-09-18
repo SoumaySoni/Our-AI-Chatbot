@@ -144,7 +144,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col items-center px-4 select-none relative pt-16">
+    <main className="min-h-screen bg-black text-white flex flex-col items-center px-4 select-none relative pt-16 w-full max-w-full overflow-x-hidden">
       {/* Hidden File Input for PDF / Document Upload */}
       <input
         type="file"

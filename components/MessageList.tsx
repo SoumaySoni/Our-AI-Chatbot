@@ -21,18 +21,20 @@ export function MessageList({ messages, chatBottomRef, inputConfig }: MessageLis
     : "Ask follow up...";
 
   return (
-    <div className="w-full max-w-180 flex flex-col pt-8 pb-32 min-h-screen">
-      <div className="flex-1 space-y-6 flex flex-col">
+    <div className="w-full max-w-180 flex flex-col pt-8 pb-32 min-h-screen min-w-0">
+      <div className="flex-1 space-y-6 flex flex-col min-w-0">
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
+            className={`flex flex-col w-full min-w-0 ${
+              msg.role === "user" ? "items-end" : "items-start"
+            }`}
           >
             {msg.role === "user" ? (
-              <div className="flex flex-col items-end max-w-[85%] space-y-2">
+              <div className="flex flex-col items-end max-w-[85%] space-y-2 min-w-0">
                 {/* Attached files inside user message bubble */}
                 {msg.attachments && msg.attachments.length > 0 && (
-                  <div className="flex flex-wrap gap-2 justify-end">
+                  <div className="flex flex-wrap gap-2 justify-end max-w-full">
                     {msg.attachments.map((file) => (
                       <div
                         key={file.id}
@@ -45,17 +47,17 @@ export function MessageList({ messages, chatBottomRef, inputConfig }: MessageLis
                   </div>
                 )}
                 {msg.text && (
-                  <div className="bg-[#212121] border border-white/10 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-[15px] shadow-sm select-text">
+                  <div className="bg-[#212121] border border-white/10 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-[15px] shadow-sm select-text break-words break-all [overflow-wrap:anywhere] min-w-0 max-w-full">
                     {msg.text}
                   </div>
                 )}
               </div>
             ) : (
-              <div className="flex gap-3 max-w-[90%] text-zinc-200 select-text leading-relaxed text-[15px]">
+              <div className="flex gap-3 max-w-[90%] text-zinc-200 select-text leading-relaxed text-[15px] min-w-0 w-full break-words break-all [overflow-wrap:anywhere]">
                 <div className="w-7 h-7 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0 mt-0.5">
                   <Sparkles className="w-4 h-4" />
                 </div>
-                <div className="space-y-2 flex-1">
+                <div className="space-y-2 flex-1 min-w-0 max-w-full break-words break-all [overflow-wrap:anywhere]">
                   {msg.thinkMode && (
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-400 text-xs font-medium border border-blue-500/20 mb-1">
                       <Brain className="w-3.5 h-3.5" />
