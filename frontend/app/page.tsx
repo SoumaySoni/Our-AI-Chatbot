@@ -86,6 +86,8 @@ export default function Home() {
     try {
       let fileContext: string | undefined = undefined;
 
+      const apiBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8001";
+
       // 1. Process files if uploaded
       if (currentFiles.length > 0) {
         const formData = new FormData();
@@ -96,7 +98,7 @@ export default function Home() {
         });
 
         if (formData.has("files")) {
-          const uploadRes = await fetch("http://localhost:8001/api/upload", {
+          const uploadRes = await fetch(`${apiBaseUrl}/api/upload`, {
             method: "POST",
             body: formData,
           });
@@ -114,7 +116,7 @@ export default function Home() {
         text: m.text,
       }));
 
-      const response = await fetch("http://localhost:8001/api/chat/stream", {
+      const response = await fetch(`${apiBaseUrl}/api/chat/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

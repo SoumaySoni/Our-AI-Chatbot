@@ -5,7 +5,13 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     PORT: int = 8001
     HOST: str = "0.0.0.0"
-    CORS_ORIGINS: List[str] = ["http://localhost:3001", "http://127.0.0.1:3001", "http://localhost:3000", "http://127.0.0.1:3000"]
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://our-ai-chatbot.vercel.app"
+    ]
     
     GEMINI_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
