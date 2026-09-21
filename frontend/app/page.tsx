@@ -50,51 +50,135 @@ export default function Home() {
     setAttachedFiles((prev) => prev.filter((f) => f.id !== id));
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (isGenerating) return;
 
     const trimmed = query.trim();
     if (!trimmed && attachedFiles.length === 0) return;
 
+    const currentFiles = [...attachedFiles];
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       text: trimmed,
-      attachments: attachedFiles.length > 0 ? [...attachedFiles] : undefined,
+      attachments: currentFiles.length > 0 ? [...currentFiles] : undefined,
       thinkMode: thinkActive,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setQuery("");
     setAttachedFiles([]);
     setIsGenerating(true);
 
-    // Simulated AI response
-    setTimeout(() => {
-      let responseText = "";
-      if (userMessage.attachments && userMessage.attachments.length > 0) {
-        const fileNames = userMessage.attachments.map((f) => f.name).join(", ");
-        responseText = `I have received your document (${fileNames}). ${trimmed
-            ? `Here is the analysis based on "${trimmed}":\n\nThe attached file has been processed successfully. What specific insights or summaries would you like me to extract?`
-            : "I am ready to analyze this document. What questions do you have about it?"
-          }`;
-      } else if (thinkActive) {
-        responseText = `**Deep Thought Analysis:**\n1. Examining core query: "${trimmed}"\n2. Cross-referencing logic and concepts.\n3. Formulating response...\n\nHere is a detailed breakdown for **${trimmed}** with deep reasoning applied.`;
-      } else {
-        responseText = `Here is what I found regarding **"${trimmed}"**. Let me know if you would like me to elaborate or assist further!`;
+    const assistantId = (Date.now() + 1).toString();
+    // Add initial placeholder message for streaming assistant response
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: assistantId,
+        role: "assistant",
+        text: "",
+        thinkMode: thinkActive,
+      },
+    ]);
+
+    try {
+      let fileContext: string | undefined = undefined;
+
+      // 1. Process files if uploaded
+      if (currentFiles.length > 0) {
+        const formData = new FormData();
+        currentFiles.forEach((fileItem) => {
+          if (fileItem.file) {
+            formData.append("files", fileItem.file);
+          }
+        });
+
+        if (formData.has("files")) {
+          const uploadRes = await fetch("http://localhost:8001/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            fileContext = uploadData.file_context;
+          }
+        }
       }
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          text: responseText,
-          thinkMode: thinkActive,
-        },
-      ]);
+      // 2. Stream tokens from FastAPI backend
+      const historyPayload = messages.map((m) => ({
+        role: m.role,
+        text: m.text,
+      }));
+
+      const response = await fetch("http://localhost:8001/api/chat/stream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: trimmed,
+          file_context: fileContext,
+          history: historyPayload,
+          think_mode: thinkActive,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+
+      if (response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let accumulatedText = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split("\n");
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              try {
+                const jsonStr = line.slice(6).trim();
+                if (!jsonStr) continue;
+                const data = JSON.parse(jsonStr);
+
+                if (data.token) {
+                  accumulatedText += data.token;
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === assistantId ? { ...msg, text: accumulatedText } : msg
+                    )
+                  );
+                }
+              } catch (err) {
+                // Ignore chunk JSON parse errors
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error calling chat backend:", error);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantId
+            ? {
+                ...msg,
+                text:
+                  "Unable to connect to backend server. Please ensure the Python backend is running on `http://localhost:8001`.",
+              }
+            : msg
+        )
+      );
+    } finally {
       setIsGenerating(false);
-    }, 700);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

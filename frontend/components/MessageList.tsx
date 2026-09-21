@@ -64,24 +64,20 @@ export function MessageList({ messages, chatBottomRef, inputConfig }: MessageLis
                       Deep Thought Logic
                     </div>
                   )}
-                  <FormattedMessageText text={msg.text} />
+                  {msg.text ? (
+                    <FormattedMessageText text={msg.text} />
+                  ) : (
+                    <div className="flex items-center gap-2 py-1">
+                      <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                      <span className="text-xs text-zinc-400">Generating response...</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </div>
         ))}
 
-        {isGenerating && (
-          <div className="flex items-center gap-3 text-zinc-400 text-sm py-2">
-            <div className="w-7 h-7 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
-              <Sparkles className="w-4 h-4 animate-pulse" />
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              <span className="text-xs text-zinc-400">Generating response...</span>
-            </div>
-          </div>
-        )}
         <div ref={chatBottomRef} />
       </div>
 
